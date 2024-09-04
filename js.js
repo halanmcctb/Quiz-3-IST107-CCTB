@@ -100,6 +100,7 @@ function intRandom(min, max) {
 
 // GLOBAL VARIABLES
 var moves = 0,
+    started = false,
     winner = 0,
     x = 1,
     o = 3,
@@ -299,29 +300,6 @@ function assignRoles() {
     document.getElementById("noBtn").addEventListener("click", makePlayerO);
 }
 
-function makePlayerX() {
-    player = x;
-    computer = o;
-    whoseTurn = player;
-    playerText = xText;
-    computerText = oText;
-    document.getElementById("userFeedback").style.display = "none";
-    document.getElementById("yesBtn").removeEventListener("click", makePlayerX);
-    document.getElementById("noBtn").removeEventListener("click", makePlayerO);
-}
-
-function makePlayerO() {
-    player = o;
-    computer = x;
-    whoseTurn = computer;
-    playerText = oText;
-    computerText = xText;
-    setTimeout(makeComputerMove, 400);
-    document.getElementById("userFeedback").style.display = "none";
-    document.getElementById("yesBtn").removeEventListener("click", makePlayerX);
-    document.getElementById("noBtn").removeEventListener("click", makePlayerO);
-}
-
 // executed when player clicks one of the table cells
 function cellClicked(id) {
     // The last character of the id corresponds to the numeric index in Grid.cells:
@@ -375,6 +353,7 @@ function restartGame(ask) {
     }
     if (ask === true) {
         // setTimeout(assignRoles, 200);
+        started = false;
         setTimeout(showOptions, 200);
     } else if (whoseTurn == computer) {
         setTimeout(makeComputerMove, 800);
@@ -586,24 +565,57 @@ function askUser(text) {
     document.getElementById("userFeedback").style.display = "block";
 }
 
+function makePlayerX() {
+    player = x;
+    computer = o;
+    whoseTurn = player;
+    playerText = xText;
+    computerText = oText;
+}
+
+function makePlayerO() {
+    player = o;
+    computer = x;
+    whoseTurn = computer;
+    playerText = oText;
+    computerText = xText;
+}
+
+function setDifficulty0() {
+    difficulty = 0
+}
+
+function setDifficulty1() {
+    difficulty = 1
+}
+
 function showOptions() {
-    if (player == o) {
-        document.getElementById("rx").checked = false;
-        document.getElementById("ro").checked = true;
+    if(!started){
+        if (player == o) {
+            document.getElementById("rx").checked = false;
+            document.getElementById("ro").checked = true;
+        }
+        else if (player == x) {
+            document.getElementById("rx").checked = true;
+            document.getElementById("ro").checked = false;
+        }
+        if (difficulty === 0) {
+            document.getElementById("r0").checked = true;
+            document.getElementById("r1").checked = false;
+        }
+        else {
+            document.getElementById("r0").checked = false;
+            document.getElementById("r1").checked = true;
+        }
+
+        document.getElementById("rx").addEventListener("click", makePlayerX);
+        document.getElementById("ro").addEventListener("click", makePlayerO);
+
+        document.getElementById("r0").addEventListener("click", setDifficulty0);
+        document.getElementById("r1").addEventListener("click", setDifficulty1);
+
+        document.getElementById("optionsDlg").style.display = "block";
     }
-    else if (player == x) {
-        document.getElementById("rx").checked = true;
-        document.getElementById("ro").checked = false;
-    }
-    if (difficulty === 0) {
-        document.getElementById("r0").checked = true;
-        document.getElementById("r1").checked = false;
-    }
-    else {
-        document.getElementById("r0").checked = false;
-        document.getElementById("r1").checked = true;
-    }
-    document.getElementById("optionsDlg").style.display = "block";
 }
 
 function getOptions() {
@@ -631,6 +643,7 @@ function getOptions() {
         setTimeout(makeComputerMove, 400);
     }
     document.getElementById("optionsDlg").style.display = "none";
+    started = true;
 }
 
 function closeModal(id) {
@@ -639,7 +652,7 @@ function closeModal(id) {
 
 function endGame(who) {
     if (who == player) {
-        announceWinner("Congratulations, [Your name] won!");
+        announceWinner("Congratulations, [Halan] won!");
     } else if (who == computer) {
         announceWinner("Computer wins!");
     } else {
